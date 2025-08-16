@@ -26,7 +26,7 @@
     
     header { width: 100%; position: fixed; top: 0; z-index: 1000; }
     nav { background: linear-gradient(0deg, #fff0 0px, var(--black) 1px 100%); height: 70px; display: flex; align-items: center; justify-content: space-between; padding: 0 20px; }
-    .logo { font-size: 1.8rem; font-weight: bold; color: var(--white); display: flex; align-items: center; }
+    .logo { font-size: 1.8rem; font-weight: bold; color: var(--white); display: flex; align-items: center; transition: font-size 0.3s ease; }
     .logo i { margin-right: 10px; color: var(--sect1); animation: pulse 2s infinite; }
     @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.2); } 100% { transform: scale(1); } }
     
@@ -51,12 +51,12 @@
     .download-cv i { margin-left: 8px; }
     
     .profile-container { position: absolute; top: 100px; right: 50px; perspective: 1000px; z-index: 50; }
-    .profile-3d { width: 180px; height: 180px; border-radius: 50%; overflow: hidden; border: 5px solid var(--white); box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2); transform-style: preserve-3d; transition: transform 0.5s ease; }
+    .profile-3d { width: 180px; height: 180px; border-radius: 50%; overflow: hidden; border: 5px solid var(--white); box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2); transform-style: preserve-3d; transition: transform 0.5s ease, width 0.3s ease, height 0.3s ease; }
     .profile-3d img { width: 100%; height: 100%; object-fit: cover; }
     
     section { min-height: 100vh; padding: 100px 20px; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; position: relative; border-bottom: 4px solid var(--black); overflow: hidden; }
     section::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.05); z-index: -1; }
-    section h2 { font-size: 3rem; margin-bottom: 30px; position: relative; text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2); }
+    section h2 { font-size: 3rem; margin-bottom: 30px; position: relative; text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2); transition: font-size 0.3s ease; }
     section h2::after { content: ''; position: absolute; bottom: -10px; left: 50%; transform: translateX(-50%); width: 80px; height: 4px; background: currentColor; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); }
     
     .content-container { width: 100%; max-width: 1000px; margin: 40px auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; position: relative; }
@@ -84,7 +84,7 @@
           overflow: hidden;
           width: 100%;
           max-width: 500px;
-          position: relative; /* <<<===== ESTA ES LA CORRECCIÓN CLAVE */
+          position: relative; 
       }
       .carousel-track {
           display: flex;
@@ -93,10 +93,10 @@
       .carousel-slide {
           flex: 0 0 100%;
           margin: 0;
-          padding: 40px 25px; /* Más padding vertical */
+          padding: 40px 25px; 
           opacity: 0.5;
           transform: scale(0.9);
-          transition: opacity 0.5s ease, transform 0.5s ease;
+          transition: opacity 0.5s ease, transform 0.5s ease, padding 0.3s ease;
       }
       .carousel-slide.is-selected {
           opacity: 1;
@@ -117,6 +117,7 @@
           cursor: pointer;
           z-index: 10;
           font-size: 1.3rem;
+          transition: all 0.3s ease;
       }
       .carousel-button.prev { left: 10px; }
       .carousel-button.next { right: 10px; }
@@ -126,6 +127,34 @@
     @media (max-width: 576px) {
       section h2 { font-size: 2.2rem; }
       .profile-3d { width: 150px; height: 150px; }
+    }
+
+    /* ===== NUEVA MEDIA QUERY PARA PANTALLAS MUY PEQUEÑAS ===== */
+    @media (max-width: 320px) {
+      section h2 {
+        font-size: 1.9rem; /* Título un poco más pequeño */
+      }
+      .logo {
+        font-size: 1.5rem; /* Reducir el tamaño del logo */
+      }
+      .profile-3d {
+        width: 120px; /* Reducir el tamaño de la foto */
+        height: 120px;
+      }
+      .download-cv {
+        padding: 12px 20px; /* Botón más compacto */
+        font-size: 0.9rem;
+      }
+      .carousel-slide {
+        padding: 30px 20px; /* Menos padding vertical en las tarjetas */
+      }
+      .carousel-button {
+        width: 35px; /* Botones del carrusel más pequeños */
+        height: 35px;
+        font-size: 1rem;
+      }
+       .carousel-button.prev { left: 5px; } /* Acercarlos un poco al borde */
+       .carousel-button.next { right: 5px; }
     }
   </style>
 </head>
@@ -188,7 +217,6 @@
         let currentIndex = 0;
 
         function setSlidePosition() {
-            // Aseguramos que solo se calcule si hay slides
             if (slides.length === 0) return;
             slideWidth = slides[0].getBoundingClientRect().width;
         }
@@ -217,15 +245,12 @@
         function initializeCarousel() {
             if (window.innerWidth <= 992) {
                 setSlidePosition();
-                // Asegura que siempre haya un slide seleccionado al inicio
                 if (!track.querySelector('.is-selected')) {
                     slides[0].classList.add('is-selected');
                 }
                 updateButtons();
-                // Forzamos la posición correcta al (re)inicializar
                 moveToSlide(currentIndex);
             } else {
-                // Limpia estilos en desktop para que se vea el grid
                 track.style.transform = '';
                 slides.forEach(slide => slide.classList.remove('is-selected'));
             }
@@ -233,7 +258,6 @@
         
         window.addEventListener('resize', initializeCarousel);
         
-        // Inicializamos al cargar la página
         initializeCarousel();
     });
   </script>
